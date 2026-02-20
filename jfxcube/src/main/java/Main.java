@@ -7,7 +7,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.animation.AnimationTimer;
 import javafx.scene.input.*;
-import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 
 class LineVertex {
@@ -184,10 +185,10 @@ class Cube {
 
       // camera translate
       X1 -= c.posX;
-      Y1 += c.posY;
+      Y1 -= c.posY;
       Z1 -= c.posZ;
       X2 -= c.posX;
-      Y2 += c.posY;
+      Y2 -= c.posY;
       Z2 -= c.posZ;
 
       // project
@@ -208,8 +209,9 @@ class Camera {
   public double screenW, screenH;
   public double directionX, directionY, directionZ;
   public double d;
+  public double speed;
 
-  Camera(double posX, double posY, double posZ, double screenW, double screenH, double directionX, double directionY, double directionZ, double d) {
+  Camera(double posX, double posY, double posZ, double screenW, double screenH, double directionX, double directionY, double directionZ, double d, double speed) {
     this.posX = posX;
     this.posY = posY;
     this.posZ = posZ;
@@ -219,6 +221,7 @@ class Camera {
     this.directionY = directionY;
     this.directionZ = directionZ;
     this.d = d;
+    this.speed = speed;
   }
 }
 
@@ -246,8 +249,9 @@ public class Main extends Application {
 
     // LineVertex.setDistance(d);
 
-    HashMap<String, Boolean> keys = new HashMap<>();
-    Camera c = new Camera(0, 0, -200, ScreenW, ScreenH, 0, 0, 1, 200);
+    Set<KeyCode> keys = new HashSet();
+
+    Camera c = new Camera(0, 0, -200, ScreenW, ScreenH, 0, 0, 1, 200, 1);
 
 
     new AnimationTimer() {
@@ -267,6 +271,18 @@ public class Main extends Application {
 
         // input
         // KeyEvent
+        if(keys.contains(KeyCode.W))
+          c.posZ += c.speed;
+        if(keys.contains(KeyCode.A))
+          c.posX -= c.speed;
+        if(keys.contains(KeyCode.D))
+          c.posX += c.speed;
+        if(keys.contains(KeyCode.S))
+          c.posZ -= c.speed;
+        if(keys.contains(KeyCode.E) || keys.contains(KeyCode.SPACE))
+          c.posY -= c.speed;
+        if(keys.contains(KeyCode.Q) || keys.contains(KeyCode.SHIFT))
+          c.posY += c.speed;
 
 
         // gc.clearRect(0, 0, ScreenW, ScreenH);
@@ -322,9 +338,14 @@ public class Main extends Application {
 
     VBox vbox = new VBox(canvas);
     Scene scene = new Scene(vbox);
+
     scene.setOnKeyPressed(e -> {
-      // add key
+      keys.add(e.getCode());
     });
+    scene.setOnKeyReleased(e -> {
+      keys.remove(e.getCode());
+    });
+
     primaryStage.setTitle("Cube");
     primaryStage.setScene(scene);
     primaryStage.show();
