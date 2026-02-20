@@ -191,6 +191,25 @@ class Cube {
       Y2 -= c.posY;
       Z2 -= c.posZ;
 
+      // camera rotate
+      oldY1 = Y1;
+      oldZ1 = Z1;
+      oldY2 = Y2;
+      oldZ2 = Z2;
+      Y1 = oldY1 * Math.cos(c.directionY) - oldZ1 * Math.sin(c.directionY);
+      Z1 = oldY1 * Math.sin(c.directionY) + oldZ1 * Math.cos(c.directionY);
+      Y2 = oldY2 * Math.cos(c.directionY) - oldZ2 * Math.sin(c.directionY);
+      Z2 = oldY2 * Math.sin(c.directionY) + oldZ2 * Math.cos(c.directionY);
+      oldX1 = X1;
+      oldZ1 = Z1;
+      oldX2 = X2;
+      oldZ2 = Z2;
+      X1 = oldX1 * Math.cos(c.directionX) + oldZ1 * Math.sin(c.directionX);
+      Z1 = -oldX1 * Math.sin(c.directionX) + oldZ1 * Math.cos(c.directionX);
+      X2 = oldX2 * Math.cos(c.directionX) + oldZ2 * Math.sin(c.directionX);
+      Z2 = -oldX2 * Math.sin(c.directionX) + oldZ2 * Math.cos(c.directionX);
+      // TODO
+
       // project
       double projX1 = c.d * X1/Z1;
       double projY1 = c.d * Y1/Z1;
@@ -249,7 +268,7 @@ public class Main extends Application {
 
     // LineVertex.setDistance(d);
 
-    Set<KeyCode> keys = new HashSet();
+    Set<KeyCode> keys = new HashSet<>();
 
     Camera c = new Camera(0, 0, -200, ScreenW, ScreenH, 0, 0, 1, 200, 1);
 
@@ -267,10 +286,10 @@ public class Main extends Application {
 
       public void handle(long currentNanoTime) {
         gc.clearRect(-ScreenW/2, -ScreenH/2, ScreenW, ScreenH);
+        // gc.clearRect(0, 0, ScreenW, ScreenH);
 
 
         // input
-        // KeyEvent
         if(keys.contains(KeyCode.W))
           c.posZ += c.speed;
         if(keys.contains(KeyCode.A))
@@ -281,12 +300,20 @@ public class Main extends Application {
           c.posZ -= c.speed;
         if(keys.contains(KeyCode.E) || keys.contains(KeyCode.SPACE))
           c.posY -= c.speed;
-        if(keys.contains(KeyCode.Q) || keys.contains(KeyCode.SHIFT))
+        if(keys.contains(KeyCode.Q) || keys.contains(KeyCode.SHIFT) || keys.contains(KeyCode.C))
           c.posY += c.speed;
+        if(keys.contains(KeyCode.RIGHT)) // test
+          c.directionX -= 0.01;
+        if(keys.contains(KeyCode.LEFT)) // test
+          c.directionX += 0.01;
+        if(keys.contains(KeyCode.UP)) // test
+          c.directionY -= 0.01;
+        if(keys.contains(KeyCode.DOWN)) // test
+          c.directionY += 0.01;
 
 
-        // gc.clearRect(0, 0, ScreenW, ScreenH);
 
+        // move cube
         // X+=delta;
         // Y+=delta;
         // Z+=delta;
@@ -296,10 +323,11 @@ public class Main extends Application {
         // if(velocity > 2.5) velocity *= -1;
 
         // angleX+=deltaAngle;
-        angleY+=deltaAngle;
+        // angleY+=deltaAngle;
         // angleZ+=deltaAngle;
 
 
+        // create and draw cube
         Cube c1 = new Cube(100, 100, 100, X, Y, Z, angleX, angleY, angleZ);
         c1.draw(gc, c);
 
